@@ -112,9 +112,8 @@ public:
 
         stack.push(startState);
 
-        int iterations = 0;
         while (!stack.empty()) {
-            iterations++;
+            ++iterations;
             State *state = stack.top();
             stack.pop();
 
@@ -149,18 +148,15 @@ public:
                 }
             }
         }
-
-        double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
-//        cout << "Solution for file " << fileName << " is in " << solution->getSteps() << " steps, " << iterations << ", " << elapsed_secs << "\n";
-
-
-        getBestSolution();
+        elapsedTime = double(clock() - begin) / CLOCKS_PER_SEC;
+        printBestSolution();
     }
 
-    void getBestSolution() {
-        cout << "File=" << fileName << ", steps=" << solution->getSteps() << ", moves=";
+    void printBestSolution() {
+        cout << "File=" << fileName << ", steps=" << solution->getSteps() << ", iterations=" << iterations << ", elapsedTime=" << elapsedTime << ", moves=";
         for (auto it = solution->getMoves().begin(); it != solution->getMoves().end(); it++) {
             cout << "(" << (*it).first << "," << (*it).second << ")";
+            if (isInStartingSetup(*it)) cout << "*";
         }
         cout << endl;
 
@@ -194,8 +190,13 @@ private:
         return true;
     }
 
+    bool isInStartingSetup(const pair<int, int> &coords) const {
+        return binary_search(startingFigs.begin(), startingFigs.end(), coords);
+    }
+
     string fileName;
-    int boardSize, upperBound;
+    int boardSize, upperBound, iterations = 0;
+    double elapsedTime;
     vector<pair<int, int>> startingFigs;
     pair<int, int> startingKnight;
     State *solution;
